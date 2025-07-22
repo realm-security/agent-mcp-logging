@@ -1,0 +1,7 @@
+[project]
+name = "agent-mcp-logging"
+version = "0.1.0"
+description = "Demonstrates structured logging of Agentic calls to MCP servers"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
