@@ -1,11 +1,13 @@
 import logging
 import uuid
+from enum import Enum
 from pythonjsonlogger import jsonlogger
 from fastmcp.client.logging import LogMessage
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_mcp_adapters.sessions import StreamableHttpConnection
 from langgraph.prebuilt import create_react_agent
 from langchain_aws import ChatBedrockConverse
+from pydantic import BaseModel, Field
 
 
 # --- 1. Structured Logging Setup ---
@@ -60,6 +62,17 @@ async def log_handler(message: LogMessage, correlation_id: str, user_id: str):
 
 # --- 2. MCP Client and Agent Setup ---
 
+# Pydantic classes for structured output
+class ThreatVerdict(str, Enum):
+    """Enumeration for allowed threat verdicts."""
+    BENIGN = "benign"
+    SUSPICIOUS = "suspicious"
+    MALICIOUS = "malicious"
+
+class PhishingAnalysis(BaseModel):
+    verdict: ThreatVerdict
+    summary: str = Field(description="Short summary explaining the reasoning for the threat verdict")
+
 async def run_phishing_triage(email_content: str, user_id: str):
     # Generate a unique ID for this entire task
     correlation_id = str(uuid.uuid4())
@@ -106,15 +119,20 @@ async def run_phishing_triage(email_content: str, user_id: str):
     3. Based on the reputation of the IOCs, provide a final verdict and a summary of your findings.
     """
     
-    react_agent = create_react_agent(model, tools, prompt=agent_prompt)
+    react_agent = create_react_agent(
+        model,
+        tools,
+        prompt=agent_prompt,
+        response_format=PhishingAnalysis,
+    )
 
     # --- 3. Invoke Agent and Log Results ---
     
     response = await react_agent.ainvoke(
         {"messages": [{"role": "user", "content": email_content}]}
     )
-    
-    final_verdict = response['messages'][-1].content
+
+    analysis = response['structured_response']
     
     agent_logger.info(
         "Completed phishing triage task.",
@@ -124,10 +142,11 @@ async def run_phishing_triage(email_content: str, user_id: str):
             "principal_user_id": user_id,
             "event_correlation_id": correlation_id,
             "event_action": "complete_triage_task",
-            "threat_verdict": final_verdict # Capturing the agent's final conclusion
+            "threat_verdict": analysis.verdict,
+            "threat_summary": analysis.summary,
         }
     )
-    return final_verdict
+    return analysis
 
 if __name__ == "__main__":
     import asyncio
@@ -144,5 +163,6 @@ if __name__ == "__main__":
     """
     
     result = asyncio.run(run_phishing_triage(suspicious_email, user_id="soc_analyst_jane_doe"))
-    print("\n--- Agent Final Verdict ---")
-    print(result)
+    print("\n--- Agent Phishing Analysis ---")
+    print(f"Verdict: {result.verdict.upper()}")
+    print(f"Summary: {result.summary}")
