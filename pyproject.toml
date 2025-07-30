@@ -4,4 +4,10 @@ version = "0.1.0"
 description = "Demonstrates structured logging of Agentic calls to MCP servers"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "fastmcp>=2.10.6",
+    "langchain-aws>=0.2.29",
+    "langchain-mcp-adapters>=0.1.9",
+    "langgraph>=0.5.4",
+    "python-json-logger>=3.3.0",
+]
