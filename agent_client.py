@@ -14,7 +14,7 @@ from langchain_aws import ChatBedrockConverse
 # We add a custom formatter to handle the 'extra' dictionary.
 class CustomJsonFormatter(jsonlogger.JsonFormatter):
     def add_fields(self, log_record, record, message_dict):
-        super(CustomJsonFormatter, self).add_fields(log_record, record, message_dict)
+        super().add_fields(log_record, record, message_dict)
         # Rename standard fields for consistency
         log_record['timestamp'] = log_record.pop('asctime')
         log_record['log_level'] = log_record.pop('levelname')
@@ -97,8 +97,7 @@ async def run_phishing_triage(email_content: str, user_id: str):
         max_tokens=None,
     )
     tools = await client.get_tools()
-    
-    # The prompt is now specific to the security use case
+
     agent_prompt = """
     You are a Tier 1 SOC Analyst AI Assistant. Your job is to analyze the user-reported email
     and determine if it is malicious, suspicious, or benign.

@@ -1,7 +1,5 @@
 import re
 from fastmcp import FastMCP, Context
-from api import mock_threat_intel_api_url, mock_threat_intel_api_hash
-
 
 # In a real application, these would be calls to external threat intelligence APIs
 # (e.g., VirusTotal, AbuseIPDB, etc.). We mock them here for demonstration.
