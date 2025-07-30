@@ -40,6 +40,7 @@ def get_structured_logger(name, level=logging.INFO):
 MCP_SERVER_NAME = "phishing_triage_mcp"
 AGENT_ID = "phishing-triage-agent-01"
 AGENT_NAME = "PhishingTriageAssistant"
+MODEL_ID = "us.anthropic.claude-3-7-sonnet-20250219-v1:0"
 
 # Get loggers for the agent's own actions and for the MCP tool logs
 agent_logger = get_structured_logger(__name__)
@@ -54,6 +55,7 @@ async def log_handler(message: LogMessage, correlation_id: str, user_id: str):
     extra_context = {
         "agent_id": AGENT_ID,
         "agent_name": AGENT_NAME,
+        "model_id": MODEL_ID,
         "principal_user_id": user_id,
         "event_correlation_id": correlation_id,
         "source_mcp_server": MCP_SERVER_NAME
@@ -83,6 +85,7 @@ async def run_phishing_triage(email_content: str, user_id: str):
         extra={
             "agent_id": AGENT_ID,
             "agent_name": AGENT_NAME,
+            "model_id": MODEL_ID,
             "principal_user_id": user_id,
             "event_correlation_id": correlation_id,
             "event_action": "start_triage_task"
@@ -104,7 +107,7 @@ async def run_phishing_triage(email_content: str, user_id: str):
 
     # Replace with your model of choice
     model = ChatBedrockConverse(
-        model="us.anthropic.claude-3-7-sonnet-20250219-v1:0",
+        model=MODEL_ID,
         region_name="us-east-1",
         temperature=0.0,
         max_tokens=None,
@@ -139,6 +142,7 @@ async def run_phishing_triage(email_content: str, user_id: str):
         extra={
             "agent_id": AGENT_ID,
             "agent_name": AGENT_NAME,
+            "model_id": MODEL_ID,
             "principal_user_id": user_id,
             "event_correlation_id": correlation_id,
             "event_action": "complete_triage_task",
