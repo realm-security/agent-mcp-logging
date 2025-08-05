@@ -1,12 +1,14 @@
 # Security Monitoring for AI Agents and MCP
 A practical guide to building an observable Phishing Triage Assistant with MCP and structured logging
 
+
 **TLDR:** We show structured logging of AI Agents with MCP to tackle Phishing Triage, allowing continuous security monitoring in a SIEM and automated remediation in a SOAR.
 
-This code is a companion to our technical blog post, published by [Realm.Security](https://realm.security/).
+This code is a companion to our [technical blog post](https://realm.security/security-monitoring-for-ai-agents-and-mcp/), published by [Realm.Security](https://realm.security/).
 
-TODO: Add link to blog post
-TODO: Add graphic
+See the [technical blog for more details](https://realm.security/security-monitoring-for-ai-agents-and-mcp/).
+
+![Overview of AI Phishing Triage Assistant](./overview.png)
 
 ## Contents
 
